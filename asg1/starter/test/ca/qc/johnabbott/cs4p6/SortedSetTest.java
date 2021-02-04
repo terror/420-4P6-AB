@@ -38,10 +38,9 @@ public class SortedSetTest {
 
         Random r = new Random(SEED);
         int i = 0;
-        while(i < TEST_SET_SIZE) {
+        while (i < TEST_SET_SIZE) {
             int x = r.nextInt(TEST_SET_MAX_ELEMENT);
-
-            if(set.add(x))
+            if (set.add(x))
                 data[i++] = x;
         }
 
@@ -59,7 +58,7 @@ public class SortedSetTest {
         for (int x : data)
             assertTrue(set.contains(x));
 
-        // contains works for values lower than min and greater than max.
+        // contains works for values lower than min and greate than max.
         assertFalse(set.contains(data[0] - 1));
         assertFalse(set.contains(data[TEST_SET_SIZE - 1] + 1));
 
@@ -101,7 +100,7 @@ public class SortedSetTest {
 
     @Test
     public void testNoDuplicates() {
-        for(int x : data){
+        for (int x : data) {
             set.add(x);
             assertEquals(TEST_SET_SIZE, set.size());
         }
@@ -110,34 +109,34 @@ public class SortedSetTest {
     @Test
     public void testFullSet() {
         SortedSet<Integer> set = new SortedSet<>(TEST_SET_CAPACITY);
-        for(int i : new Range(TEST_SET_CAPACITY))
+        for (int i : new Range(TEST_SET_CAPACITY))
             set.add(i);
         assertTrue(set.size() == TEST_SET_CAPACITY);
         assertTrue(set.isFull());
     }
 
-    @Test (expected = FullSetException.class)
+    @Test(expected = FullSetException.class)
     public void testFullSetException() {
         SortedSet<Integer> set = new SortedSet<>(TEST_SET_CAPACITY);
-        for(int i : new Range(TEST_SET_CAPACITY + +1))
+        for (int i : new Range(TEST_SET_CAPACITY + +1))
             set.add(i);
     }
 
     @Test
     public void testRemoveFirst() {
         assertTrue(set.remove(data[0]));
-        assertEquals(TEST_SET_SIZE-1, set.size());
+        assertEquals(TEST_SET_SIZE - 1, set.size());
     }
 
     @Test
     public void testRemoveLast() {
         assertTrue(set.remove(data[TEST_SET_SIZE - 1]));
-        assertEquals(TEST_SET_SIZE-1, set.size());
+        assertEquals(TEST_SET_SIZE - 1, set.size());
     }
 
     @Test
     public void testRemoveMiddle() {
-        assertTrue(set.remove(data[TEST_SET_SIZE/2]));
+        assertTrue(set.remove(data[TEST_SET_SIZE / 2]));
         assertEquals(TEST_SET_SIZE - 1, set.size());
 
     }
@@ -170,8 +169,7 @@ public class SortedSetTest {
         SortedSet<Integer> set = new SortedSet<>();
         try {
             set.remove(42);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail();
         }
     }
@@ -189,7 +187,7 @@ public class SortedSetTest {
     @Test
     public void testNewMin() {
         set.add(data[0] - 1);
-        assertEquals(data[0] - 1,  (int) set.min()); // not sure why I need the cast here...
+        assertEquals(data[0] - 1, (int) set.min()); // not sure why I need the cast here...
     }
 
     @Test
@@ -205,13 +203,13 @@ public class SortedSetTest {
         assertEquals(set.min(), set.max());
     }
 
-    @Test (expected = EmptySetException.class)
+    @Test(expected = EmptySetException.class)
     public void testMinOnEmptySet() {
         SortedSet<Integer> set = new SortedSet<>();
         set.min();
     }
 
-    @Test (expected = EmptySetException.class)
+    @Test(expected = EmptySetException.class)
     public void testMaxOnEmptySet() {
         SortedSet<Integer> set = new SortedSet<>();
         set.max();
@@ -220,7 +218,7 @@ public class SortedSetTest {
     @Test
     public void testTraversal() {
         set.reset();
-        for(int x : data) {
+        for (int x : data) {
             assertTrue(set.hasNext());
             assertEquals(x, (int) set.next());
         }
@@ -233,8 +231,7 @@ public class SortedSetTest {
         try {
             while (set.hasNext())
                 set.next();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fail(e.getMessage());
         }
     }
@@ -246,7 +243,7 @@ public class SortedSetTest {
         assertFalse(set.hasNext());
     }
 
-    @Test (expected = TraversalException.class)
+    @Test(expected = TraversalException.class)
     public void testAddDuringTraversal() {
         set.reset();
         set.next();
@@ -254,12 +251,29 @@ public class SortedSetTest {
         set.next();
     }
 
-    @Test (expected = TraversalException.class)
+    @Test(expected = TraversalException.class)
+    public void testAddRemoveDuringTraversal() {
+        set.reset();
+        set.next();
+        set.add(123);
+        set.remove(123);
+        set.next();
+    }
+
+    @Test(expected = TraversalException.class)
     public void testCallNextOnCompletedTraversal() {
         set.reset();
-        while(set.hasNext())
+        while (set.hasNext())
             set.next();
         set.next();
+    }
+
+    @Test
+    public void testAddAfterAbandonedTraversal() {
+        set.reset();
+        set.next();
+        set.next();
+        set.add(123);
     }
 
     @Test
@@ -302,6 +316,7 @@ public class SortedSetTest {
 
         // another way this might occur:
         assertTrue(all.containsAll(all));
+
     }
 
     @Test
@@ -310,8 +325,8 @@ public class SortedSetTest {
         StringBuilder sb = new StringBuilder();
         sb.append('{');
         boolean first = true;
-        for(int x : data) {
-            if(first)
+        for (int x : data) {
+            if (first)
                 first = false;
             else
                 sb.append(", ");
@@ -341,33 +356,48 @@ public class SortedSetTest {
     }
 
     @Test
+    public void testSubsetLowEqualsHigh() {
+        // low = high gives empty set
+        int value = data[TEST_SET_SIZE / 2];
+        SortedSet<Integer> empty = set.subset(value, value);
+        assertTrue(empty.isEmpty());
+    }
+
+    @Test
     public void testSubset() {
 
-        // low = high gives empty set
-        SortedSet<Integer> empty = set.subset(100, 100);
-        assertTrue(empty.isEmpty());
-
-        // same but for existing value
-        empty = set.subset(data[TEST_SET_SIZE / 2], data[TEST_SET_SIZE / 2]);
-        assertTrue(empty.isEmpty());
-
         // test subset for the three innermost elements
-        SortedSet<Integer> subset = set.subset(data[TEST_SET_SIZE / 2 - 1], data[TEST_SET_SIZE / 2 + 1] + 1);
-        assertEquals(3, subset.size());
+        int low = data[TEST_SET_SIZE / 2 - 1] - 1;
+        int high = data[TEST_SET_SIZE / 2 + 1] + 1;
+
+        SortedSet<Integer> subset = set.subset(low, high);
+        assertEquals(4, subset.size());
         assertTrue(subset.contains(data[TEST_SET_SIZE / 2 - 1]));
         assertTrue(subset.contains(data[TEST_SET_SIZE / 2]));
         assertTrue(subset.contains(data[TEST_SET_SIZE / 2 + 1]));
+    }
+
+    @Test
+    public void testSubsetHighValueExclusive() {
+        // test subset for the two innermost elements
+        int low = data[TEST_SET_SIZE / 2 - 1] - 1;
+        int high = data[TEST_SET_SIZE / 2 + 1];
 
         // test subset with exclusive
-        subset = set.subset(data[TEST_SET_SIZE / 2 - 1], data[TEST_SET_SIZE / 2 + 1]);
+        SortedSet<Integer> subset = set.subset(data[TEST_SET_SIZE / 2 - 1], data[TEST_SET_SIZE / 2 + 1]);
         assertEquals(2, subset.size());
         assertTrue(subset.contains(data[TEST_SET_SIZE / 2 - 1]));
         assertTrue(subset.contains(data[TEST_SET_SIZE / 2]));
+    }
 
+    @Test
+    public void testSubsetIsEntireSet() {
         // subset is the same as the set if the entire range is specified
-        subset = set.subset(data[0] - 1, data[TEST_SET_SIZE - 1] + 1);
+        SortedSet<Integer> subset = set.subset(data[0] - 1, data[TEST_SET_SIZE - 1] + 1);
         assertEquals(set.size(), subset.size());
         assertTrue(set.containsAll(subset));
+        assertTrue(subset.containsAll(set));
     }
+
 
 }

@@ -1,7 +1,5 @@
 package ca.qc.johnabbott.cs4p6.collections;
 
-import com.sun.jdi.ObjectReference;
-
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -15,6 +13,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     private T[] elements;
     private int size;
     private int ptr;
+    private int mod;
 
     public SortedSet() {
         this(DEFAULT_CAPACITY);
@@ -46,9 +45,9 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     private void shiftNull(int idx) {
-        for(int i = idx; i < elements.length-1; ++i) {
-            if (elements[i+1] == null) break;
-            swap(i, i+1);
+        for (int i = idx; i < elements.length - 1; ++i) {
+            if (elements[i + 1] == null) break;
+            swap(i, i + 1);
         }
     }
 
@@ -60,6 +59,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     @Override
     public boolean containsAll(Set<T> rhs) {
+        rhs.reset();
         while (rhs.hasNext()) {
             T el = rhs.next();
             // binary search for desired element
@@ -72,23 +72,16 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     @Override
     public boolean add(T elem) {
         // check if full
-        if (size == elements.length) throw new FullSetException();
-
-        // are we currently traversing?
-        if (ptr != 0) throw new TraversalException();
+        if (isFull()) throw new FullSetException();
 
         // check for a duplicate
-        for (int i = 0; i < elements.length; ++i)
-            if (!Objects.isNull(elements[i]) && elements[i].equals(elem)) return false;
+        for (int i = 0; i < size; ++i) {
+            if (elements[i].equals(elem)) return false;
+        }
 
         // we can add
-        for (int i = 0; i < elements.length; ++i) {
-            if (Objects.isNull(elements[i])) {
-                elements[i] = elem;
-                ++size;
-                break;
-            }
-        }
+        elements[size++] = elem;
+        mod = 1;
 
         sort();
         return true;
@@ -103,6 +96,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
             if (elements[i].equals(elem)) {
                 elements[i] = null;
                 --size;
+                mod = 1;
 
                 // shift the null created
                 shiftNull(i);
@@ -156,11 +150,11 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
         SortedSet<T> ret = new SortedSet<>();
         for (int i = 0; i < size; ++i) {
+            // check first <= val < last
             if (elements[i].compareTo(first) >= 0 && elements[i].compareTo(last) < 0)
                 ret.add(elements[i]);
         }
 
-        ret.sort();
         return ret;
     }
 
@@ -184,11 +178,12 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     @Override
     public void reset() {
         ptr = 0;
+        mod = 0;
     }
 
     @Override
     public T next() {
-        if (!hasNext()) throw new TraversalException();
+        if (!hasNext() || mod == 1) throw new TraversalException();
         return elements[ptr++];
     }
 
