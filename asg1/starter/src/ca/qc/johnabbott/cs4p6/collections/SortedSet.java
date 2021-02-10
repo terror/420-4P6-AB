@@ -13,7 +13,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     private T[] elements;
     private int size;
     private int ptr;
-    private int mod;
+    private boolean modified;
 
     public SortedSet() {
         this(DEFAULT_CAPACITY);
@@ -24,9 +24,12 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         this.elements = (T[]) new Comparable[capacity];
     }
 
-    // Standard insertion sort
+    // Insertion sort
     private void sort() {
+        // check if empty
         if (isEmpty()) return;
+
+        // sort
         for (int i = 1; i < size; ++i) {
             T key = elements[i];
             int j = i - 1;
@@ -38,12 +41,14 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         }
     }
 
+    // Swap elements who reside at index a, b
     public void swap(int a, int b) {
         T t = elements[a];
         elements[a] = elements[b];
         elements[b] = t;
     }
 
+    // Shift a created null to sit before an existing one
     private void shiftNull(int idx) {
         for (int i = idx; i < elements.length - 1; ++i) {
             if (elements[i + 1] == null) break;
@@ -61,7 +66,8 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     public boolean containsAll(Set<T> rhs) {
         rhs.reset();
         while (rhs.hasNext()) {
-            T el = rhs.next();
+            T el = rhs.next(); // current element
+
             // binary search for desired element
             if (Arrays.binarySearch(elements, 0, size, el) < 0) return false;
         }
@@ -75,13 +81,11 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         if (isFull()) throw new FullSetException();
 
         // check for a duplicate
-        for (int i = 0; i < size; ++i) {
-            if (elements[i].equals(elem)) return false;
-        }
+        if (Arrays.binarySearch(elements, 0, size, elem) >= 0) return false;
 
         // we can add
         elements[size++] = elem;
-        mod = 1;
+        modified = true;
 
         sort();
         return true;
@@ -91,12 +95,16 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     public boolean remove(T elem) {
         if (isEmpty()) return false;
 
+        // first check if element exists within set
+        if (Arrays.binarySearch(elements, 0, size, elem) < 0) return false;
+
+        // scan for the elements index
         for (int i = 0; i < size; ++i) {
-            // remove if found
+            // "remove" the element when found
             if (elements[i].equals(elem)) {
                 elements[i] = null;
                 --size;
-                mod = 1;
+                modified = true;
 
                 // shift the null created
                 shiftNull(i);
@@ -117,9 +125,9 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     /**
-     * TODO
+     * Gets the minimum element from the set.
      *
-     * @return
+     * @return T
      */
     public T min() {
         if (isEmpty()) throw new EmptySetException();
@@ -127,9 +135,9 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     /**
-     * TODO
+     * Gets the maximum element from the set.
      *
-     * @return
+     * @return T
      */
     public T max() {
         if (isEmpty()) throw new EmptySetException();
@@ -137,11 +145,11 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     /**
-     * TODO
+     * Returns a subset in which whose elements fall between the range [first, last[
      *
      * @param first
      * @param last
-     * @return
+     * @return SortedSet<T>
      */
     public SortedSet<T> subset(T first, T last) {
         // edge cases
@@ -178,12 +186,12 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     @Override
     public void reset() {
         ptr = 0;
-        mod = 0;
+        modified = false;
     }
 
     @Override
     public T next() {
-        if (!hasNext() || mod == 1) throw new TraversalException();
+        if (!hasNext() || modified) throw new TraversalException();
         return elements[ptr++];
     }
 
