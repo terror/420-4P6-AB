@@ -1,0 +1,1 @@
+All images copyright (c) 2020 Ian Clement.  All rights reserved.
