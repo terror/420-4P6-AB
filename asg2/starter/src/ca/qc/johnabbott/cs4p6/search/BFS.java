@@ -36,8 +36,8 @@ public class BFS implements Search {
         this.toDirections   = new SparseArray(Direction.NONE);
         this.fromDirections = new SparseArray(Direction.NONE);
 
-        // initialize stack and push starting location
-        Queue<Location> q = new Queue(1000);
+        // initialize queue and push starting location
+        Queue<Location> q = new Queue(10000000);
         q.enqueue(start);
 
         int iteration = 0;
@@ -72,7 +72,7 @@ public class BFS implements Search {
                     // mark position as seen
                     this.colors.set(pos, Color.GREY);
 
-                    // push neighboring cell to stack
+                    // enqueue neighboring cell to queue
                     q.enqueue(pos);
 
                     // set from direction
@@ -124,6 +124,6 @@ public class BFS implements Search {
 
     @Override
     public String toString() {
-        return "DFS";
+        return "BFS";
     }
 }
