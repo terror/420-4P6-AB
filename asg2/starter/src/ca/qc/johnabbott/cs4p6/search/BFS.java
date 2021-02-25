@@ -39,13 +39,11 @@ public class BFS implements Search {
         // initialize queue and push starting location
         Queue<Location> q = new Queue(10000000);
         q.enqueue(start);
+        colors.set(start, Color.BLACK);
 
         int iteration = 0;
         while (!q.isEmpty()) {
             Location curr = q.dequeue();
-
-            // mark current position as visited
-            colors.set(curr, Color.BLACK);
 
             // check if at goal
             if (curr.equals(goal)) {
@@ -69,11 +67,15 @@ public class BFS implements Search {
                 if (colors.get(pos) == Color.BLACK) continue;
 
                 if (terrain.inTerrain(pos) && !terrain.isWall(pos)) {
-                    // mark position as seen
-                    this.colors.set(pos, Color.GREY);
+                    // mark this positions neighbors as "seen" but not visited
+                    for(int j = 0; j < neighbors.length; ++j)
+                        this.colors.set(pos.get(neighbors[i]), Color.GREY);
 
                     // enqueue neighboring cell to queue
                     q.enqueue(pos);
+
+                    // mark position as visited
+                    this.colors.set(pos, Color.BLACK);
 
                     // set from direction
                     this.fromDirections.set(pos, neighbors[i].opposite());
