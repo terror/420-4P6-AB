@@ -38,6 +38,7 @@ public class StreamBuilder {
     }
 
     public Reader createReader() throws FileNotFoundException {
+        // check for illegal state
         if (this.precision != -1)
             throw new IllegalStateException();
 
@@ -61,10 +62,12 @@ public class StreamBuilder {
             statsReader = new StatsReader(censorReader != null ? censorReader : cipherReader != null ? cipherReader : reader, this.out);
         }
 
+        // return the correct chained reader
         return statsReader != null ? statsReader : censorReader != null ? censorReader : cipherReader != null ? cipherReader : reader;
     }
 
     public Writer createWriter() throws IOException {
+        // check for illegal state
         if (this.word != "" || (this.precision != -1 && this.precision < 0))
             throw new IllegalStateException();
 
@@ -88,6 +91,7 @@ public class StreamBuilder {
             statsWriter = new StatsWriter(lineNumberWriter != null ? lineNumberWriter : cipherWriter != null ? cipherWriter : writer, this.out);
         }
 
+        // return the correct chained writer
         return statsWriter != null ? statsWriter : lineNumberWriter != null ? lineNumberWriter : cipherWriter != null ? cipherWriter : writer;
     }
 }

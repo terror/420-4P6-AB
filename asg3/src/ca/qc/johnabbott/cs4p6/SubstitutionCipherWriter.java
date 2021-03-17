@@ -6,8 +6,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class SubstitutionCipherWriter extends BaseWriter {
-    private String alphabet = "abcdefghijklmnopqrstuvwxyz";
     private String keyword;
+    private String alphabet = "abcdefghijklmnopqrstuvwxyz";
 
     public SubstitutionCipherWriter(Writer writer, String keyword) {
         super(writer);
@@ -19,14 +19,16 @@ public class SubstitutionCipherWriter extends BaseWriter {
         // compute alphabet
         String cipherAlphabet = "";
 
-        Set<Character> s = new LinkedHashSet<Character>();
+        // store all unique chars
+        Set<Character> unique = new LinkedHashSet<Character>();
         for (int i = 0; i < keyword.length(); ++i)
-            s.add(keyword.charAt(i));
+            unique.add(keyword.charAt(i));
 
-        for (char c : s)
+        // add unique chars to beginning of cipher alphabet
+        for (char c : unique)
             cipherAlphabet += c;
 
-
+        // add unseen chars in alphabet to cipher alphabet, in order
         for (int i = 0; i < alphabet.length(); ++i) {
             if (cipherAlphabet.indexOf(alphabet.charAt(i)) == -1)
                 cipherAlphabet += alphabet.charAt(i);
@@ -35,11 +37,12 @@ public class SubstitutionCipherWriter extends BaseWriter {
         // substitute
         for (int i = 0; i < len; ++i) {
             if (Character.isAlphabetic(cbuf[i])) {
-                char ret = cipherAlphabet.charAt(alphabet.indexOf(Character.toLowerCase(cbuf[i])));
-                cbuf[i] = Character.isUpperCase(cbuf[i]) ? Character.toUpperCase(ret) : ret;
+                char current = cipherAlphabet.charAt(alphabet.indexOf(Character.toLowerCase(cbuf[i])));
+                cbuf[i] = Character.isUpperCase(cbuf[i]) ? Character.toUpperCase(current) : current;
             }
         }
 
         super.write(cbuf, off, len);
+        super.close();
     }
 }

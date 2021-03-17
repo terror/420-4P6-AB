@@ -8,7 +8,7 @@ public class CensorReader extends BaseReader {
 
     public CensorReader(Reader reader, String word) {
         super(reader);
-        this.word = word;
+        this.word = word.toLowerCase();
     }
 
     @Override
@@ -16,13 +16,14 @@ public class CensorReader extends BaseReader {
         int data = super.read(cbuf, off, len);
 
         for (int i = 0; i < data; ++i) {
-            // check for match
             int j = i, idx = 0;
             boolean match = false;
 
+            // check for match
             if (Character.toLowerCase(cbuf[j]) == word.charAt(idx)) {
                 match = true;
                 for (; j < i + word.length(); ++j) {
+                    // current word doesn't equal the given word
                     if (Character.toLowerCase(cbuf[j]) != word.charAt(idx)) {
                         match = false;
                         break;

@@ -105,7 +105,7 @@ public class Main {
     public static void substitutionWriter(Writer writer, String keyword) {
         SubstitutionCipherWriter cipherWriter = new SubstitutionCipherWriter(writer, keyword);
         PrintWriter printWriter = new PrintWriter(cipherWriter);
-        printWriter.println("Live each season as it passes;\n" +
+        printWriter.println("Live each season as it passes;" +
                 "\nbreath the air," +
                 "\ndrink the drink," +
                 "\ntaste the fruit," +

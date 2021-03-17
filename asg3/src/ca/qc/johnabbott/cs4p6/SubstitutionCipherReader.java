@@ -21,14 +21,16 @@ public class SubstitutionCipherReader extends BaseReader {
         // compute alphabet
         String cipherAlphabet = "";
 
-        Set<Character> s = new LinkedHashSet<Character>();
+        // store all unique chars
+        Set<Character> unique = new LinkedHashSet<Character>();
         for (int i = 0; i < keyword.length(); ++i)
-            s.add(keyword.charAt(i));
+            unique.add(keyword.charAt(i));
 
-        for (char c : s)
+        // add unique chars to beginning of cipher alphabet
+        for (char c : unique)
             cipherAlphabet += c;
 
-
+        // add unseen chars in alphabet to cipher alphabet, in order
         for (int i = 0; i < alphabet.length(); ++i) {
             if (cipherAlphabet.indexOf(alphabet.charAt(i)) == -1)
                 cipherAlphabet += alphabet.charAt(i);
@@ -37,11 +39,12 @@ public class SubstitutionCipherReader extends BaseReader {
         // substitute
         for (int i = 0; i < data; ++i) {
             if (Character.isAlphabetic(cbuf[i])) {
-                char ret = alphabet.charAt(cipherAlphabet.indexOf(Character.toLowerCase(cbuf[i])));
-                cbuf[i] = Character.isUpperCase(cbuf[i]) ? Character.toUpperCase(ret) : ret;
+                char current = alphabet.charAt(cipherAlphabet.indexOf(Character.toLowerCase(cbuf[i])));
+                cbuf[i] = Character.isUpperCase(cbuf[i]) ? Character.toUpperCase(current) : current;
             }
         }
 
+        super.close();
         return data;
     }
 }
