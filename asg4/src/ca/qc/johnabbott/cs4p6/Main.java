@@ -30,7 +30,7 @@ public class Main {
         System.out.print("o> ");
         int o = scanner.nextInt();
         while (o < 0) {
-            System.out.println("o must be between greater than 0 (o > 0).");
+            System.out.println("o must be greater than 0 (o > 0).");
             System.out.print("o> ");
             o = scanner.nextInt();
         }
@@ -49,7 +49,7 @@ public class Main {
         // advance `it`
         it = it.next;
 
-        // simulate the process until the list size is zero
+        // simulate the process until the list size is one (only containing the exit)
         while (list.size() != 1) {
 
             // traverse until we reach tagged
@@ -81,6 +81,7 @@ public class Main {
                     break;
                 }
 
+                // check if `it` has reached the exit
                 if (it.element == null) {
                     System.out.println(String.format("%c escaped!", itElement));
                     it = tagged;
@@ -88,6 +89,7 @@ public class Main {
                     break;
                 }
 
+                // check if tagged has reached the exit
                 if (tagged.element == null) {
                     System.out.println(String.format("%c escaped!", taggedElement));
                     break;
@@ -104,19 +106,20 @@ public class Main {
     }
 
     // construct a linked list of size n
-    public static <T> LinkedList<T> construct(int n) {
+    public static LinkedList construct(int n) {
         int ascii_start = 65;
         LinkedList<Character> list = new LinkedList<>();
         for (int i = 0; i < n; ++i)
             list.add((char) ascii_start++);
-        return (LinkedList<T>) list;
+        return list;
     }
 
-    public static class ListBoundsException extends RuntimeException {}
+    public static class ListBoundsException extends RuntimeException {
+    }
 
     public static class LinkedList<T> {
-        private DoubleLink<T> head;
-        private DoubleLink<T> last;
+        private DoubleLink head;
+        private DoubleLink last;
         private int size;
 
         public LinkedList() {
@@ -125,18 +128,16 @@ public class Main {
         }
 
         public void add(T element) {
-            DoubleLink<T> newNode = new DoubleLink<>(element);
+            DoubleLink newNode = new DoubleLink<>(element);
             // check if list is empty
             if (head == null) {
-                newNode.next = newNode;
-                newNode.prev = newNode;
+                newNode.next = newNode.prev = newNode;
                 head = newNode;
                 last = head;
             } else {
                 // add new link to the end of the list
                 newNode.prev = last;
-                last.next = newNode;
-                head.prev = newNode;
+                last.next = head.prev = newNode;
                 newNode.next = head;
                 last = newNode;
             }
@@ -144,67 +145,48 @@ public class Main {
             ++size;
         }
 
-        public DoubleLink<T> remove(DoubleLink link) {
-            // If list is empty
+        public DoubleLink remove(DoubleLink link) {
+            // check if list is empty
             if (head == null)
                 return null;
 
+            // find link to remove
             DoubleLink curr = head, prev = null;
             while (curr.element != link.element) {
-                if (curr.next == head) {
-                    System.out.printf("\nList doesn't have node with value = %d", link.element);
-                    break;
-                }
                 prev = curr;
                 curr = curr.next;
             }
 
-            // check if node is the only node
+            // check if link is the only link in the list
             if (curr == head && curr.next == head) {
                 head = null;
                 return null;
             }
 
+            // remove link from list
             if (curr == head) {
                 prev = head;
-                while(prev.next != head)
+                while (prev.next != head)
                     prev = prev.next;
                 head = curr.next;
                 prev.next = head;
-            }
-            else if (curr.next == head) {
+            } else if (curr.next == head)
                 prev.next = head;
-            }
-            else {
+            else
                 prev.next = curr.next;
-            }
+
             --size;
             return prev;
-        }
-
-        public void printList() {
-            DoubleLink curr = head;
-            int pos = 0;
-            while(pos < size) {
-                System.out.print(curr.element);
-                System.out.print(" ");
-                curr = curr.next;
-                ++pos;
-            }
-            System.out.println();
         }
 
         public DoubleLink get(int position) {
             if (position < 0 || position >= size)
                 throw new ListBoundsException();
 
+            // get link at given position
             DoubleLink<T> curr = head;
-            int currPos = 0;
-            while (currPos != position) {
+            for (int i = 0; i < position; ++i)
                 curr = curr.next;
-                ++currPos;
-            }
-
             return curr;
         }
 
