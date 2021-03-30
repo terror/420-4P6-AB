@@ -21,8 +21,8 @@ public class Main {
 
         System.out.print("m> ");
         int m = scanner.nextInt();
-        while (m < 0 || m > n) {
-            System.out.println("m must be between 0 and n (0 < m <= n).");
+        while (m < 0 || m >= n) {
+            System.out.println("m must be between 0 and n - 1 (0 <= m < n).");
             System.out.print("m> ");
             m = scanner.nextInt();
         }
