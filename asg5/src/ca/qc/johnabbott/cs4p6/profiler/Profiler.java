@@ -80,10 +80,10 @@ public class Profiler {
     public List<Section> produceProfilingData() {
         List<Section> sections = new ArrayList<>();
 
-        // keep track of current sections when dealing with regions
+        // keep track of current section when dealing with regions
         Section currentSection = null;
 
-        // used for retrieving end marks
+        // used for retrieving marks when encountering an end type
         ArrayList<Mark> store = new ArrayList<>();
 
         // used for storing labels -> regions
