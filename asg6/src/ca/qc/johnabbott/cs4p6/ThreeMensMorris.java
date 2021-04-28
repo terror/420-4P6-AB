@@ -71,6 +71,16 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
         return Token.NONE;
     }
 
+    public boolean isFull() {
+        int numTokens = 0;
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j)
+                if (tokens[i][j] != Token.NONE)
+                    ++numTokens;
+        }
+        return numTokens == 6;
+    }
+
     @Override
     public ThreeMensMorris copy() {
         ThreeMensMorris copy = new ThreeMensMorris();
