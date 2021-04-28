@@ -1,6 +1,8 @@
 package ca.qc.johnabbott.cs4p6;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
     private final int N = 3;
@@ -30,9 +32,9 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
         if (filePos < 0 || filePos > 2 || rankPos < 0 || rankPos > 2)
             throw new IllegalArgumentException();
 
-        if (tokens[rankPos][filePos] != Token.NONE)
+        if (tokens[rankPos][filePos] != Token.NONE) {
             return false;
-
+        }
         tokens[rankPos][filePos] = turn;
         turn = turn.opposite();
 
@@ -81,6 +83,17 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
         return numTokens == 6;
     }
 
+    public List<Pair> moves() {
+        ArrayList<Pair> p = new ArrayList<>();
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
+                if (tokens[i][j] == Token.NONE)
+                    p.add(new Pair(j, i));
+            }
+        }
+        return p;
+    }
+
     @Override
     public ThreeMensMorris copy() {
         ThreeMensMorris copy = new ThreeMensMorris();
@@ -88,18 +101,19 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
             for (int j = 0; j < N; ++j)
                 copy.tokens[i][j] = tokens[i][j];
         }
+        copy.turn = this.turn;
         return copy;
     }
 
     @Override
     public String toString() {
         String ret = "[";
+        Token winner = winner();
 
         // iterate over cells and append circles
         for (int i = 0; i < N; ++i) {
-            for (int j = 0; j < N; ++j) {
+            for (int j = 0; j < N; ++j)
                 ret += tokens[i][j].toString();
-            }
         }
 
         // close the bracket
@@ -109,7 +123,7 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
         ret += String.format("turn=%s ", turn.toString());
 
         // append the winner
-        ret += String.format("winner=%s", winner().toString());
+        ret += String.format("winner=%s", winner != Token.NONE ? winner.toString() : "NONE");
 
         return ret;
     }
