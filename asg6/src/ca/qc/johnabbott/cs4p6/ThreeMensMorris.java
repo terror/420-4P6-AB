@@ -73,6 +73,7 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
         return Token.NONE;
     }
 
+    // check if the board is full (all 6 tokens are placed)
     public boolean isFull() {
         int numTokens = 0;
         for (int i = 0; i < N; ++i) {
@@ -83,6 +84,7 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
         return numTokens == 6;
     }
 
+    // return all possible moves the players can make
     public List<Pair> moves() {
         ArrayList<Pair> p = new ArrayList<>();
         for (int i = 0; i < N; ++i) {
@@ -97,10 +99,12 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
     @Override
     public ThreeMensMorris copy() {
         ThreeMensMorris copy = new ThreeMensMorris();
+        // copy the board
         for (int i = 0; i < N; ++i) {
             for (int j = 0; j < N; ++j)
                 copy.tokens[i][j] = tokens[i][j];
         }
+        // copy the turn
         copy.turn = this.turn;
         return copy;
     }
@@ -131,7 +135,7 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
     @Override
     public boolean equals(Object o) {
         ThreeMensMorris other = (ThreeMensMorris) o;
-        // n^2 check to see if two boards are the same
+        // compare tokens to see if two boards are the same
         for (int i = 0; i < N; ++i) {
             for (int j = 0; j < N; ++j)
                 if (other.tokens[i][j] != tokens[i][j]) return false;
@@ -141,6 +145,6 @@ public class ThreeMensMorris implements Copyable<ThreeMensMorris>, Game {
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(tokens);
+        return Arrays.deepHashCode(tokens);
     }
 }

@@ -1,11 +1,11 @@
 package ca.qc.johnabbott.cs4p6;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
 public class Main {
-    private static final int N = 3;
     private static char[] file = {'a', 'b', 'c'};
     private static char[] rank = {'1', '2', '3'};
 
@@ -28,12 +28,12 @@ public class Main {
     }
 
     public static List<ThreeMensMorris> generate(ThreeMensMorris initial) {
-        List<ThreeMensMorris> ret = new ArrayList<>();
+        HashSet<ThreeMensMorris> ret = new HashSet<>();
         generateHelper(initial, ret);
-        return ret;
+        return new ArrayList<>(ret);
     }
 
-    public static void generateHelper(ThreeMensMorris current, List<ThreeMensMorris> acc) {
+    public static void generateHelper(ThreeMensMorris current, HashSet<ThreeMensMorris> acc) {
         // go through all possible moves
         for (Pair move : current.moves()) {
             ThreeMensMorris board = current.copy();
@@ -41,8 +41,8 @@ public class Main {
             // play the current position
             board.play(file[move.x], rank[move.y]);
 
-            // add board is it's full and hasn't been seen
-            if ((board.isFull()) && !acc.contains(board))
+            // add board is it's full
+            if (board.isFull())
                 acc.add(board);
 
             // recursive step
