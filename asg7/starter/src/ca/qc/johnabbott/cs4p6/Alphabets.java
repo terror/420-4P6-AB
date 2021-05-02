@@ -12,7 +12,7 @@ public class Alphabets {
     public static final char[] ABCDE_ALPHABET = "abcde".toCharArray();
 
     public static final String LEXICON_FULL = "starter/lexicon/words-linux-cleaned.txt";
-    public static final String LEXICON_ABCDE_ONLY = "lexicon/words-linux-cleaned-abcde.txt";
+    public static final String LEXICON_ABCDE_ONLY = "starter/lexicon/words-linux-cleaned-abcde.txt";
 
     // can get from http://wordlist.aspell.net/
     // warning: may contain offensive words

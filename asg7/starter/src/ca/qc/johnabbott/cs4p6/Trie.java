@@ -14,7 +14,7 @@ public class Trie implements Lexicon {
         add(root, word, 0);
     }
 
-    public void add(Node node, String word, int iter) {
+    private void add(Node node, String word, int iter) {
         // if we're still traversing the string,
         // add the node to the end of the trie
         if (iter < word.length()) {
@@ -26,13 +26,12 @@ public class Trie implements Lexicon {
             node.leaf = true;
     }
 
-
     @Override
     public boolean contains(String word) {
         return contains(root, word, 0, word.length() + 1);
     }
 
-    public boolean contains(Node node, String word, int iter, int size) {
+    private boolean contains(Node node, String word, int iter, int size) {
         // if we've overstepped, the trie does not contain `word`
         if (node == null || (iter == size - 1 && !node.leaf))
             return false;
@@ -45,8 +44,8 @@ public class Trie implements Lexicon {
         return contains(node.children.get(word.charAt(iter)), word, iter + 1, size);
     }
 
-    public boolean hasPrefix(Node node, String prefix, int iter, int size) {
-        // if we've overstepped, the trie does not contain `word`
+    private boolean hasPrefix(Node node, String prefix, int iter, int size) {
+        // if we've overstepped, the trie does not contain `prefix`
         if (node == null)
             return false;
 
@@ -78,7 +77,7 @@ public class Trie implements Lexicon {
         return acc;
     }
 
-    public void suggestionsHelper(Node node, String prefix, int limit, List<String> acc) {
+    private void suggestionsHelper(Node node, String prefix, int limit, List<String> acc) {
         // check if our list has reached the limit capacity
         if (acc.size() == limit)
             return;
