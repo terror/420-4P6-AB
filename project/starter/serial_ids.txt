@@ -1,0 +1,21 @@
+List of Serial IDs
+================================
+
+## Reserved range (0x00-0x10)
+
+null = 0x00
+ca.qc.johnabbott.cs4p6.serialization.util.Integer = 0x01;
+ca.qc.johnabbott.cs4p6.serialization.util.Short   = 0x02;
+ca.qc.johnabbott.cs4p6.serialization.util.Long    = 0x03;
+ca.qc.johnabbott.cs4p6.serialization.util.Float   = 0x04;
+ca.qc.johnabbott.cs4p6.serialization.util.Double  = 0x05;
+ca.qc.johnabbott.cs4p6.serialization.util.String  = 0x06;
+ca.qc.johnabbott.cs4p6.serialization.util.Date    = 0x07;
+ca.qc.johnabbott.cs4p6.serialization.util.Box     = 0x08;
+
+## Custom rage (0x11-0xFF)
+ca.qc.johnabbott.cs4p6.serialization.Point = 0x11;
+ca.qc.johnabbott.cs4p6.serialization.Grade = 0x12;
+
+
+
