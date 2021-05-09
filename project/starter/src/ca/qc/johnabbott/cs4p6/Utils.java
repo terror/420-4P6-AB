@@ -1,5 +1,7 @@
 package ca.qc.johnabbott.cs4p6;
 
+import ca.qc.johnabbott.cs4p6.collections.Tuple;
+import ca.qc.johnabbott.cs4p6.collections.list.LinkedList;
 import ca.qc.johnabbott.cs4p6.serialization.Serializable;
 import ca.qc.johnabbott.cs4p6.serialization.SerializationException;
 import ca.qc.johnabbott.cs4p6.serialization.Serializer;
@@ -35,6 +37,10 @@ public class Utils {
                 .registerCreator(String.SERIAL_ID, String::new)
                 .registerCreator(Point.SERIAL_ID, Point::new)
                 .registerCreator(Grade.SERIAL_ID, Grade::new)
+                .registerCreator(Tuple.Single.SERIAL_ID, Tuple.Single::new)
+                .registerCreator(Tuple.Pair.SERIAL_ID, Tuple.Pair::new)
+                .registerCreator(Tuple.Triple.SERIAL_ID, Tuple.Triple::new)
+                .registerCreator(LinkedList.SERIAL_ID, LinkedList::new)
                 .build();
 
         T result = (T) deserializer.readSerializable();

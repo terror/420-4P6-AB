@@ -14,8 +14,11 @@ ca.qc.johnabbott.cs4p6.serialization.util.Date    = 0x07;
 ca.qc.johnabbott.cs4p6.serialization.util.Box     = 0x08;
 
 ## Custom rage (0x11-0xFF)
-ca.qc.johnabbott.cs4p6.serialization.Point = 0x11;
-ca.qc.johnabbott.cs4p6.serialization.Grade = 0x12;
-
-
-
+ca.qc.johnabbott.cs4p6.serialization.Point        = 0x11;
+ca.qc.johnabbott.cs4p6.serialization.Grade        = 0x12;
+ca.qc.johnabbott.cs4p6.serialization.Tuple.Single = 0x13;
+ca.qc.johnabbott.cs4p6.serialization.Tuple.Pair   = 0x14;
+ca.qc.johnabbott.cs4p6.serialization.Tuple.Triple = 0x15;
+ca.qc.johnabbott.cs4p6.serialization.LinkedList   = 0x16;
+ca.qc.johnabbott.cs4p6.serialization.HashMap      = 0x17;
+ca.qc.johnabbott.cs4p6.serialization.TreeSet      = 0x18;

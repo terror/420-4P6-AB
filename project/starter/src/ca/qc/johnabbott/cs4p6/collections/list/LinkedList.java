@@ -4,37 +4,21 @@
 
 package ca.qc.johnabbott.cs4p6.collections.list;
 
+import ca.qc.johnabbott.cs4p6.serialization.Serializable;
+import ca.qc.johnabbott.cs4p6.serialization.SerializationException;
+import ca.qc.johnabbott.cs4p6.serialization.Serializer;
+
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * An implementation of the List interface using unidirectional links, forming a "chain".
  *
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  */
-public class LinkedList<T> implements List<T>{
-
-    /* private inner class for link "chains" */
-    private static class Link<T> {
-        T element;
-        Link<T> next;
-        public Link(T element) {
-            this.element = element;
-        }
-        public Link() {}
-    }
-
-    /**
-     * Move a reference `i` links along the chain. Returns null if `i` exceeds chain length.
-     * @param i number of links to move.
-     * @return the reference to the link after `i` moves.
-     */
-    private Link<T> move(int i) {
-        // move traversal forward i times.
-        Link<T> current = head;
-        for(int j=0; j<i && current != null; j++)
-            current = current.next;
-        return current;
-    }
+public class LinkedList<T extends Serializable> implements List<T>, Serializable {
+    public static final byte SERIAL_ID = 0x16;
 
     /* a list is represented with a head "dummy" node to simplify the
      * add/remove operation implementation. */
@@ -54,8 +38,61 @@ public class LinkedList<T> implements List<T>{
     }
 
     @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+        // write the `size` of the list, useful for deserializing
+        serializer.write(size);
+
+        // traverse the list and serialize each link `element`
+        Link curr = head;
+        while (curr.next != null) {
+            serializer.write(curr.element);
+            curr = curr.next;
+        }
+
+        // write `last`'s element
+        serializer.write(last.element);
+    }
+
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        // read the `size` and set it on `this`
+        this.size = serializer.readInt();
+
+        // set the `head` element
+        Link curr = new Link((T) serializer.readSerializable());
+        this.head = curr;
+
+        for (int i = 0; i < this.size - 1; ++i) {
+            curr.next = new Link((T) serializer.readSerializable());
+            curr = curr.next;
+        }
+
+        // set the `last` element
+        this.last = curr;
+    }
+
+    /**
+     * Move a reference `i` links along the chain. Returns null if `i` exceeds chain length.
+     *
+     * @param i number of links to move.
+     * @return the reference to the link after `i` moves.
+     */
+    private Link<T> move(int i) {
+        // move traversal forward i times.
+        Link<T> current = head;
+        for (int j = 0; j < i && current != null; j++)
+            current = current.next;
+        return current;
+    }
+
+    @Override
     public void add(T element) {
-        if(head == null)
+        if (head == null)
             head = last = new Link<>(element);
         else {
             // add a new link at the end of the list, put last accordingly
@@ -67,21 +104,20 @@ public class LinkedList<T> implements List<T>{
 
     @Override
     public void add(int position, T element) {
-        if(position < 0 || position > size)
+        if (position < 0 || position > size)
             throw new ListBoundsException();
-        
+
         // when "appending" call the add(x) method
-        if(position == size) {
+        if (position == size) {
             add(element);
             return;
         }
 
-        if(position == 0) {
+        if (position == 0) {
             Link<T> tmp = head;
             head = new Link<>(element);
             head.next = tmp;
-        }
-        else {
+        } else {
             // move a link reference to the desired position (point to link "position")
             Link<T> current = move(position - 1);
 
@@ -95,18 +131,17 @@ public class LinkedList<T> implements List<T>{
 
     @Override
     public T remove(int position) {
-        if(position < 0 || position >= size)
+        if (position < 0 || position >= size)
             throw new ListBoundsException();
 
         T element;
 
-        if(position == 0) {
+        if (position == 0) {
             element = head.element;
             head = head.next;
-            if(head.next == null)
+            if (head.next == null)
                 last = head;
-        }
-        else {
+        } else {
             // move a link pointer to the desired position (point to link "position")
             Link<T> current = move(position - 1);
 
@@ -118,7 +153,7 @@ public class LinkedList<T> implements List<T>{
                 last = current;
         }
         size--;
-        
+
         return element;
     }
 
@@ -129,8 +164,8 @@ public class LinkedList<T> implements List<T>{
     }
 
     @Override
-    public T get(int position){
-        if(position < 0 || position >= size)
+    public T get(int position) {
+        if (position < 0 || position >= size)
             throw new ListBoundsException();
 
         // move a link pointer to the desired position (point to link "position")
@@ -139,8 +174,8 @@ public class LinkedList<T> implements List<T>{
     }
 
     @Override
-    public T set(int position, T element){
-        if(position < 0 || position >= size)
+    public T set(int position, T element) {
+        if (position < 0 || position >= size)
             throw new ListBoundsException();
 
         // move a link pointer to the desired position (point to link "position")
@@ -151,21 +186,21 @@ public class LinkedList<T> implements List<T>{
     }
 
     @Override
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return size() == 0;
     }
 
     @Override
-    public int size(){
+    public int size() {
         return size;
     }
 
     @Override
-    public boolean contains(T element){
+    public boolean contains(T element) {
         // simple linear search
         Link<T> current = head;
-        while(current != null) {
-            if(current.element.equals(element))
+        while (current != null) {
+            if (current.element.equals(element))
                 return true;
             current = current.next;
         }
@@ -183,6 +218,36 @@ public class LinkedList<T> implements List<T>{
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LinkedList<?> that = (LinkedList<?>) o;
+
+        // check for the same `size`
+        if (that.size != this.size)
+            return false;
+
+        Link a = that.head;
+        Link b = this.head;
+
+        // check for each link `element` equality
+        while (a.next != null && b.next != null) {
+            if (!a.element.equals(b.element))
+                return false;
+            a = a.next;
+            b = b.next;
+        }
+
+        return this.last.element.equals(that.last.element) ? true : false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(head, last, size);
+    }
+
+    @Override
     public boolean remove(T element) {
         throw new RuntimeException("not implemented");
     }
@@ -191,16 +256,27 @@ public class LinkedList<T> implements List<T>{
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
-        for(Link<T> current = head; current != null; current = current.next) {
+        for (Link<T> current = head; current != null; current = current.next) {
             sb.append(current.element);
-            if(current.next != null)
+            if (current.next != null)
                 sb.append(", ");
         }
         sb.append(']');
         return sb.toString();
     }
 
+    /* private inner class for link "chains" */
+    private static class Link<T extends Serializable> {
+        T element;
+        Link<T> next;
 
+        public Link(T element) {
+            this.element = element;
+        }
+
+        public Link() {
+        }
+    }
 }
 
 
