@@ -5,15 +5,20 @@
 package ca.qc.johnabbott.cs4p6.collections.set;
 
 import ca.qc.johnabbott.cs4p6.serialization.Serializable;
+import ca.qc.johnabbott.cs4p6.serialization.SerializationException;
+import ca.qc.johnabbott.cs4p6.serialization.Serializer;
 
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * An implementation of the Set API using a binary search tree.
  *
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  */
-public class TreeSet<T extends Serializable & Comparable<T>> implements Set<T> {
+public class TreeSet<T extends Serializable & Comparable<T>> implements Set<T>, Serializable {
+    public static final byte SERIAL_ID = 0x19;
 
     // fields: store the root of ths bst and the size.
     private Node<T> root;
@@ -234,6 +239,36 @@ public class TreeSet<T extends Serializable & Comparable<T>> implements Set<T> {
         toStringHelper(current.left, builder);
         builder.append(current.element);
         toStringHelper(current.right, builder);
+    }
+
+    @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+
+    }
+
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TreeSet<?> treeSet = (TreeSet<?>) o;
+
+        return size == treeSet.size && Objects.equals(root, treeSet.root);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(root, size);
     }
 
     private class Node<T> {

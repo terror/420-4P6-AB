@@ -7,16 +7,26 @@ package ca.qc.johnabbott.cs4p6.collections.map;
 
 import ca.qc.johnabbott.cs4p6.collections.list.LinkedList;
 import ca.qc.johnabbott.cs4p6.collections.list.List;
+import ca.qc.johnabbott.cs4p6.serialization.Logger;
 import ca.qc.johnabbott.cs4p6.serialization.Serializable;
+import ca.qc.johnabbott.cs4p6.serialization.SerializationException;
+import ca.qc.johnabbott.cs4p6.serialization.Serializer;
+import ca.qc.johnabbott.cs4p6.serialization.util.Double;
+import ca.qc.johnabbott.cs4p6.serialization.util.Integer;
 
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * Implements the map using open addressing.
  *
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  */
-public class HashMap<K extends Serializable, V extends Serializable> implements Map<K, V> {
+public class HashMap<K extends Serializable, V extends Serializable> implements Map<K, V>, Serializable {
     public static final byte SERIAL_ID = 0x17;
 
     private static final int DEFAULT_BUCKETS = 7;
@@ -289,6 +299,123 @@ public class HashMap<K extends Serializable, V extends Serializable> implements 
         return sb.toString();
     }
 
+    @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+        // first serialize `threshold`, `size` and buckets `length`
+        Logger.getInstance().log("HashMap: serializing `threshold` = " + this.threshold);
+        serializer.write(new Double(this.threshold));
+
+        Logger.getInstance().log("HashMap: serializing `size` = " + this.size);
+        serializer.write(new Integer(this.size));
+
+        Logger.getInstance().log("HashMap: serializing `buckets.length` = " + this.buckets.length);
+        serializer.write(new Integer(this.buckets.length));
+
+        // serialize enough information so as to be able to rebuild buckets
+        // 1. we need to know the size of each chain
+        // 2. we need to serialize all (K->V) pairs
+        // size, (Key->Value), (Key->Value) ...
+
+        ArrayList<Integer> sz = new ArrayList<>();
+        for (int i = 0; i < this.buckets.length; ++i) {
+            int currSize = 0;
+            Link<Entry<K, V>> curr = this.buckets[i];
+            while (curr != null) {
+                curr = curr.next;
+                ++currSize;
+            }
+            if (currSize != 0)
+                sz.add(new Integer(currSize));
+        }
+
+        int start = 0;
+        for (; start < this.buckets.length; ++start) {
+            if (this.buckets[start] != null)
+                break;
+        }
+
+        for (int i = 0; i < sz.size(); ++i) {
+            // write this lists `size`
+            Logger.getInstance().log("HashMap: serializing `buckets[i] size` = " + sz.get(i));
+            serializer.write(sz.get(i));
+
+            // traverse and serialize each (K, V) pair
+            Link<Entry<K, V>> curr = this.buckets[start++];
+            Logger.getInstance().log("HashMap: serializing `buckets[i] linked list`");
+            while (curr != null) {
+                Logger.getInstance().log("HashMap: serializing `buckets[i] linked list: current element: `" + curr.element);
+                serializer.write(curr.element);
+                curr = curr.next;
+            }
+        }
+    }
+
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        // read `threshold`, `size` and buckets `length` and set them on `this`
+        this.threshold = ((Double) serializer.readSerializable()).get();
+        this.size = ((Integer) serializer.readSerializable()).get();
+        this.buckets = (Link<Entry<K, V>>[]) new Link[((Integer) serializer.readSerializable()).get()];
+
+        // recreate each new linked list of entries
+        for (int i = 0; i < this.size; ++i) {
+            // read this lists `size`
+            int size = ((Integer) serializer.readSerializable()).get();
+
+            // traverse and recreate the current list of entries
+            Link<Entry<K, V>> curr = new Link<>(((Entry<K, V>) serializer.readSerializable()));
+            this.buckets[i] = curr;
+            for (int j = 0; j < size - 1; ++j) {
+                curr.next = new Link<>((Entry<K, V>) serializer.readSerializable());
+                curr = curr.next;
+            }
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        HashMap<?, ?> hashMap = (HashMap<?, ?>) o;
+
+        if (this.size != hashMap.size)
+            return false;
+
+        if (java.lang.Double.compare(hashMap.threshold, threshold) != 0)
+            return false;
+
+        // compare buckets
+        for (int i = 0; i < hashMap.buckets.length; ++i) {
+            // continue if both links are null
+            if (hashMap.buckets[i] == null && this.buckets[i] == null)
+                continue;
+
+            // compare this chain
+            Link a = this.buckets[i], b = hashMap.buckets[i];
+            while (a != null && b != null) {
+                if (!a.element.equals(b.element))
+                    return false;
+                a = a.next;
+                b = b.next;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(size, threshold);
+        result = 31 * result + Arrays.hashCode(buckets);
+        return result;
+    }
+
     private static class Link<T> {
         public Link<T> next;
         public T element;
@@ -300,5 +427,4 @@ public class HashMap<K extends Serializable, V extends Serializable> implements 
             this.element = element;
         }
     }
-
 }
