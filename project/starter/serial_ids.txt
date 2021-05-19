@@ -23,3 +23,4 @@ ca.qc.johnabbott.cs4p6.collections.list.LinkedList = 0x16;
 ca.qc.johnabbott.cs4p6.collections.map.HashMap     = 0x17;
 ca.qc.johnabbott.cs4p6.collections.map.Entry       = 0x18;
 ca.qc.johnabbott.cs4p6.collections.set.TreeSet     = 0x19;
+ca.qc.johnabbott.cs4p6.collections.set.TreeSet     = 0x20;

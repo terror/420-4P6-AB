@@ -4,6 +4,7 @@ import ca.qc.johnabbott.cs4p6.collections.Tuple;
 import ca.qc.johnabbott.cs4p6.collections.list.LinkedList;
 import ca.qc.johnabbott.cs4p6.collections.map.Entry;
 import ca.qc.johnabbott.cs4p6.collections.map.HashMap;
+import ca.qc.johnabbott.cs4p6.collections.set.TreeSet;
 import ca.qc.johnabbott.cs4p6.serialization.Serializable;
 import ca.qc.johnabbott.cs4p6.serialization.SerializationException;
 import ca.qc.johnabbott.cs4p6.serialization.Serializer;
@@ -45,6 +46,7 @@ public class Utils {
                 .registerCreator(LinkedList.SERIAL_ID, LinkedList::new)
                 .registerCreator(HashMap.SERIAL_ID, HashMap::new)
                 .registerCreator(Entry.SERIAL_ID, Entry::new)
+                .registerCreator(TreeSet.SERIAL_ID, TreeSet::new)
                 .build();
 
         T result = (T) deserializer.readSerializable();

@@ -7,6 +7,7 @@ package ca.qc.johnabbott.cs4p6.serialization;
 import ca.qc.johnabbott.cs4p6.serialization.io.Destination;
 import ca.qc.johnabbott.cs4p6.serialization.io.Source;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -36,6 +37,12 @@ public class OptimizedSerializer extends Serializer {
         this(null, destination, manifest);
     }
 
-    // TODO: override as necessary
+    @Override
+    public Serializable readSerializable() throws IOException, SerializationException {
+        return null;
+    }
 
+    @Override
+    public void write(Serializable value) throws IOException {
+    }
 }

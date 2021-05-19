@@ -7,8 +7,11 @@ package ca.qc.johnabbott.cs4p6.collections.set;
 import ca.qc.johnabbott.cs4p6.serialization.Serializable;
 import ca.qc.johnabbott.cs4p6.serialization.SerializationException;
 import ca.qc.johnabbott.cs4p6.serialization.Serializer;
+import ca.qc.johnabbott.cs4p6.serialization.util.Integer;
+import org.junit.platform.engine.support.hierarchical.Node;
 
 import java.io.IOException;
+import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -18,7 +21,7 @@ import java.util.Objects;
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  */
 public class TreeSet<T extends Serializable & Comparable<T>> implements Set<T>, Serializable {
-    public static final byte SERIAL_ID = 0x19;
+    public static final byte SERIAL_ID = 0x20;
 
     // fields: store the root of ths bst and the size.
     private Node<T> root;
@@ -248,21 +251,68 @@ public class TreeSet<T extends Serializable & Comparable<T>> implements Set<T>, 
 
     @Override
     public void serialize(Serializer serializer) throws IOException {
+        serializer.write(new Integer(this.size));
+        serializeHelper(root, serializer);
+    }
 
+    public void serializeHelper(Node node, Serializer serializer) throws IOException {
+        // recursively serialize all tree nodes
+        if (node == null)
+            return;
+        serializer.write(node.element);
+        serializeHelper(node.left, serializer);
+        serializeHelper(node.right, serializer);
     }
 
     @Override
     public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        // read `size`
+        this.size = ((Integer) serializer.readSerializable()).get();
 
+        // recreate tree without calls to add
+        // we must traverse the tree, placing the current element
+        // and updating the tree
+        for (int i = 0; i < this.size; ++i) {
+            T element = (T) serializer.readSerializable();
+            if (this.root == null)
+                this.root = new Node<>(element);
+            else
+                this.deserializeHelper(this.root, element);
+        }
+    }
+
+
+    public void deserializeHelper(Node<T> root, T element) {
+        // inorder traversal to recreate the tree
+        int cmp = element.compareTo(root.element);
+
+        if (cmp == 0)
+            return;
+
+        if (cmp < 0) {
+            // check if left is null and set it
+            if (root.left == null) {
+                root.left = new Node<>(element);
+                return;
+            } else
+                deserializeHelper(root.left, element);
+        }
+
+        if (cmp > 0) {
+            // check if right is null and set it
+            if (root.right == null) {
+                root.right = new Node<>(element);
+                return;
+            } else
+                deserializeHelper(root.right, element);
+        }
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         TreeSet<?> treeSet = (TreeSet<?>) o;
-
         return size == treeSet.size && Objects.equals(root, treeSet.root);
     }
 
@@ -271,13 +321,26 @@ public class TreeSet<T extends Serializable & Comparable<T>> implements Set<T>, 
         return Objects.hash(root, size);
     }
 
-    private class Node<T> {
+    private class Node<T extends Serializable> {
         public T element;
         public Node<T> left;
         public Node<T> right;
 
         public Node(T element) {
             this.element = element;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Node<?> node = (Node<?>) o;
+            return Objects.equals(element, node.element) && Objects.equals(left, node.left) && Objects.equals(right, node.right);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(element, left, right);
         }
     }
 }
