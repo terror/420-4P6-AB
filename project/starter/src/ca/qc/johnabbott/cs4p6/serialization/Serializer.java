@@ -120,6 +120,15 @@ public class Serializer {
     }
 
     /**
+     * Write a serializable object without writing the serial ID
+     * @param value The object to serialize.
+     * @throws IOException
+     */
+    public void writeOriginal(Serializable value) throws IOException {
+        value.serialize(this);
+    }
+
+    /**
      * Write a byte array to the destination.
      * @param bytes The bytes to write.
      * @throws IOException

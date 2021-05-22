@@ -23,7 +23,7 @@ public class Utils {
     // serialize and deserialize the passed in `object`
     // and return the deserialized result
     public static <T extends Serializable> T setup(File file, T object) throws SerializationException, IOException {
-        Serializer serializer = new SerializerBuilder().toDestination(file.getAbsolutePath()).build();
+        Serializer serializer = new SerializerBuilder().toDestination(file.getAbsolutePath()).optimizeReferences().build();
 
         serializer.write(object);
 
@@ -46,7 +46,7 @@ public class Utils {
                 .registerCreator(LinkedList.SERIAL_ID, LinkedList::new)
                 .registerCreator(HashMap.SERIAL_ID, HashMap::new)
                 .registerCreator(Entry.SERIAL_ID, Entry::new)
-                .registerCreator(TreeSet.SERIAL_ID, TreeSet::new)
+                .registerCreator(TreeSet.SERIAL_ID, TreeSet::new).optimizeReferences()
                 .build();
 
         T result = (T) deserializer.readSerializable();
