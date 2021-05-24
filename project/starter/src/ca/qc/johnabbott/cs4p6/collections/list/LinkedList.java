@@ -47,6 +47,10 @@ public class LinkedList<T extends Serializable> implements List<T>, Serializable
         // write the `size` of the list, useful for deserializing
         serializer.write(size);
 
+        // check if list is empty
+        if (size == 0)
+            return;
+
         // traverse the list and serialize each link `element`
         Link curr = head;
         while (curr.next != null) {
@@ -62,6 +66,10 @@ public class LinkedList<T extends Serializable> implements List<T>, Serializable
     public void deserialize(Serializer serializer) throws IOException, SerializationException {
         // read the `size` and set it on `this`
         this.size = serializer.readInt();
+
+        // check if the list is empty
+        if (size == 0)
+            return;
 
         // set the `head` element
         Link curr = new Link((T) serializer.readSerializable());
