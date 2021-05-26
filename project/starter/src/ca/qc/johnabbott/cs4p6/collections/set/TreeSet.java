@@ -21,7 +21,7 @@ import java.util.Objects;
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  */
 public class TreeSet<T extends Serializable & Comparable<T>> implements Set<T>, Serializable {
-    public static final byte SERIAL_ID = 0x20;
+    public static final byte SERIAL_ID = 0x19;
 
     // fields: store the root of ths bst and the size.
     private Node<T> root;
