@@ -1,38 +1,25 @@
-420-406-AB Data Structures - Asgs
-=================================
+## 420-406-AB Data Structures - Assignments
 
-Repository of asg solutions the course Data Structures (420-406-AB).
+Repository of assignment solutions for the course Data Structures (420-406-AB)
+@ John Abbott College.
 
-# Contents
+### Contents
 
-*  Solution folders for each asg and the project:
+[Assignment 1](https://github.com/terror/420-4P6-AB/tree/master/asg1) - Sorted Set Implementation <br/>
 
-        asg[1-7], project
+[Assignment 2](https://github.com/terror/420-4P6-AB/tree/master/asg2) - Graph Traversal Algorithms (DFS/BFS) <br/>
 
-   Each of these folders is an IntelliJ project. See the README files in these folders. 
+[Assignment 3](https://github.com/terror/420-4P6-AB/tree/master/asg3) - Custom Reader / Writer Implementations <br/>
 
-*  A git "ignore" file (`.gitignore`) containing files and directories that should not be added to a git
-   repository. For example, compiled Java files `*.class`.
+[Assignment 4](https://github.com/terror/420-4P6-AB/tree/master/asg4) - Duck duck goose variant using a Linked List <br/>
 
-*  A folder called `other` for miscellaneous files and project.
+[Assignment 5](https://github.com/terror/420-4P6-AB/tree/master/asg5) - Profiling <br/>
 
-# Submitting assignments
+[Assignment 6](https://github.com/terror/420-4P6-AB/tree/master/asg6) - Three
+Mens Morris (game and recursive board generation) <br/>
 
-For full instructions, see the document "Using Git for 420-406 Assignments" on Léa.
+[Assignment 7](https://github.com/terror/420-4P6-AB/tree/master/asg7) - Trie implementation (with suggestions) <br/>
 
-1.  Commit all the necessary files for your submission. If you are using branches, make sure that
-    all features have been pulled into the master branch.
-
-2.  Synchronize with github.com (push and pull).
-
-3.  Retrieve the SHA code associated with the commit.
-
-4.  Put the SHA in a text-file (*.txt) and upload this to Léa for the asg/project.
-
-The submission date/time of the assignment will be the date/time that the SHA is submitted on Léa.
-
-# Student Name (optional)
-
-NAME
-
-
+[Final Project](https://github.com/terror/420-4P6-AB/tree/master/project) - Serialization and Deserialization implementation for various
+<br/>
+Data Structures
